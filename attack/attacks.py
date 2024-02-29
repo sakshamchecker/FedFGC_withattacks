@@ -101,6 +101,6 @@ def attack_property(target_model, dataset,attack_train_indices, attack_test_indi
     except:
         print("")
     with open(f"{path}/attack/attack_results.csv", "w") as f:
-        f.write(f"cid","cr","dp","Property, Accuracy, Baseline Accuracy\n")
+        f.write(f"cid, cr, dp, Property, Accuracy, Baseline Accuracy\n")
         for property in properties:
             f.write(f"{cid},{cr},{dp},{property}, {acc[property][0]}, {baseline_acc[property][0]}\n")
