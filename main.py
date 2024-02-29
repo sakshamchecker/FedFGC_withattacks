@@ -74,7 +74,8 @@ def execute(args, cr, dp, experiment_path, attacks):
     print(f"Train Accuracy: {train_accuracy}")
     for att in attacks:
         if att=='recon':
-            attack_recon(target_model, dataset, attack_test_indices, max_nodes=20, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], num_runs=1, graph_vae_model_file=pretrainedvae)
+            pretrainedvae="pretrained/PROTEINS_diff_pool.zip"
+            attack_recon(target_model, dataset, attack_test_indices, max_nodes=20, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], num_runs=1, graph_vae_model_file=pretrainedvae, experiment_path=experiment_path, cid=-1, cr=cr, dp=dp)
         elif att=='infer':
             pretrained_infer="pretrained/PROTEINS_PROTEINS_diff_pool_diff_pool_2"
 
@@ -161,7 +162,7 @@ if __name__=="__main__":
     parser.add_argument('--coarsen', type=str, default="False", help='coarsen')
     parser.add_argument('--priv', type=str, default="False", help='priv')
     parser.add_argument('--max_nodes', type=int, default=20, help='max_nodes')
-    parser.add_argument('--attacks', type=str, default="infer", help='attacks')
+    parser.add_argument('--attacks', type=str, default="recon", help='attacks')
     args = parser.parse_args()
     if args.coarsen=='False':
         coarsen=[False]
