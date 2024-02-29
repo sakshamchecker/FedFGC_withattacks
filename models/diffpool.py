@@ -41,7 +41,7 @@ class DiffPool(GNNBase):
                 optimizer.zero_grad()
                 # print(data.mask.shape)
                 # exit()
-                output, link_loss, entropy_loss = self.model(data.x, data.adj, data.mask)
+                output, link_loss, entropy_loss = self.model(data.x, data.adj)
                 loss = F.nll_loss(output, data.y.view(-1))
                 loss.backward()
                 loss_all += data.y.size(0) * loss.item()
