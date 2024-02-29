@@ -8,6 +8,7 @@ def attack_recon(target_model,dataset, attack_test_indices, max_nodes, recon_sta
     # paras=target_model.paras
     paras = target_model.load_paras('target_model_parars')
     attack.init_graph_vae(dataset, 192, max_nodes)
+    print(attack.graph_vae_model)
     graph_recon_stat_run = []
     graph_recon_stat = defaultdict(dict)
     graph_recon_dist = defaultdict(dict)
