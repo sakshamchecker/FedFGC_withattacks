@@ -153,7 +153,7 @@ class Attack:
 
         classes_dict = dict(zip(self.properties, [self.property_num_class for _ in range(len(self.properties))]))
         index_attr_mapping = dict(zip(range(len(self.properties)), self.properties))
-        self.attack_model = MultiClassClassifier(self.train_graph_embedding.shape[1], classes_dict, index_attr_mapping)
+        self.attack_model = MultiClassClassifier(self.test_graph_embedding.shape[1], classes_dict, index_attr_mapping)
 
         if is_train:
             self.attack_model.train_model(self._generate_tensor_dataset(self.train_graph_embedding, self.train_label), num_epochs=100)
