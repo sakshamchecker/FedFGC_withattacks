@@ -51,7 +51,7 @@ def attack_recon(target_model,dataset, attack_test_indices, max_nodes, recon_sta
     except:
         print("")
     with open(f"{experiment_path}/recon/recon_results.csv", "w") as f:
-        f.write(f"cid","cr","dp","Graph Recon Stat, Graph Recon Metric, Value, Std\n")
+        f.write(f"cid, cr, dp, Graph Recon Stat, Graph Recon Metric, Value, Std\n")
         for graph_recon_stat in recon_stat:
             for graph_recon_metric in recon_metrics:
                 f.write(f"{cid},{cr},{dp},{graph_recon_stat}, {graph_recon_metric}, {graph_recon_stat_data[graph_recon_stat][graph_recon_metric][0]}, {graph_recon_stat_data[graph_recon_stat][graph_recon_metric][1]}\n")
