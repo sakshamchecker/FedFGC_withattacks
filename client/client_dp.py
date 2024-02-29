@@ -20,7 +20,7 @@ import copy
 # Define Flower client
 
 class FlowerClient(fl.client.NumPyClient):
-    def __init__(self, cid, model,dataset, trainloaders, valloader, epochs, path,state, device, args, dp):
+    def __init__(self, cid, model,dataset, trainloaders, valloader, epochs, path,state, device, args, dp, cr):
         self.cid = int(cid)
         # self.model = net(params[0], params[1], params[2])
         self.model = model
@@ -35,6 +35,7 @@ class FlowerClient(fl.client.NumPyClient):
         self.state = state
         self.args = args
         self.dp=dp
+        self.cr=cr
     def get_parameters(self, config):
         return [val.cpu().numpy() for name, val in self.model.model.state_dict().items() if 'num_batches_tracked' not in name]
 
@@ -51,7 +52,9 @@ class FlowerClient(fl.client.NumPyClient):
         # params,avg_loss=train(args=self.args, model=self.model, device=self.device, train_graphs=self.trainloader[self.cid], epochs=self.epochs, test_graphs=self.valloader, dp=self.dp)
         # self.set_parameters(params)
         # loss, accuracy = test(self.model, self.trainloader[self.cid], self.device)
-        test_accuracy=train_a_model(target_model=self.model, dataset=self.dataset, target_indices=self.trainloader, attack_test_indices=self.valloader, num_epochs=self.epochs, batch_size=8, coarsen=True)
+        if self.dp:
+            dp_params=[1.1, 0.3]
+        test_accuracy=train_a_model(target_model=self.model, dataset=self.dataset, target_indices=self.trainloader, attack_test_indices=self.valloader, num_epochs=self.epochs, batch_size=8, coarsen=self.cr, dp=self.dp, dp_params=dp_params)
         # loss, accuracy = test(args=self.args, model=self.model, device=self.device, test_graphs=self.trainloader[self.cid])
         loss=0
         accuracy=test_a_model(target_model=self.model,dataset=self.dataset, attack_test_indices=self.trainloader)

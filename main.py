@@ -69,12 +69,10 @@ def execute(args):
     # attack(target_model, dataset, attack_test_indices, max_nodes=20, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], num_runs=1, graph_vae_model_file=pretrainedvae)
 # execute(None)
 
-def execute_fl(args):
+def execute_fl(args, cr, dp, experim):
     # experiment_path = f"{args.output}/{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.ncl}_{args.rounds}_{args.tr_ratio}_{args.epochs}_{args.data}_{args.strat}"
-    experiment_path=f"{args.output}/{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.ncl}_{args.rounds}_{args.target_ratio}_{args.epochs}_{args.strat}_{args.coarsen}_{args.priv}"
-    print(f"Experiment path: {experiment_path}")
-    os.makedirs(experiment_path, exist_ok=True)
-    dataset=load_raw_data("PROTEINS")
+   
+    dataset=load_raw_data("PROTEINS", max_nodes=args.max_nodes)
     target_indices, shadow_indices, attack_train_indices, attack_test_indices, idxs = split_data_to_clients(dataset=dataset, num_clients=args.ncl, alpha=args.alpha, target_ratio=args.target_ratio, shadow_ratio=args.shadow_ratio, attack_train_ratio=args.attack_train_ratio)
     if args.coarsen=='all':
         corasen=[False,True]
@@ -88,15 +86,13 @@ def execute_fl(args):
         priv=[True]
     else:
         priv=[False]
-    cr=False
-    dp=False
     # print(type(target_indices))
     # print(type(target_indices[0]))
     # print(len(target_indices))
     # print(len(target_indices[0]))
     # print(len(list(target_indices[0])))
     def client_fn(client_id):
-        target_model = DiffPool(feat_dim=dataset.num_features, num_classes=dataset.num_classes, max_nodes=1000, args=None)
+        target_model = DiffPool(feat_dim=dataset.num_features, num_classes=dataset.num_classes, max_nodes=20, args=None)
         # return FlowerClient(cid, net, train_loaders, valloader, args.epochs, path=path, state=coarsen, device=device, args=args, dp=priv)
         return FlowerClient(cid=client_id, model=target_model, dataset=dataset, trainloaders=target_indices[int(client_id)], valloader=attack_test_indices[int(client_id)], epochs=args.epochs, path=experiment_path, state=cr, device="cuda", args=args, dp=dp)
     ray_args = {'num_cpus':1, 'num_gpus':0}
@@ -147,6 +143,25 @@ if __name__=="__main__":
     parser.add_argument('--output', type=str, default="output", help='output')
     parser.add_argument('--coarsen', type=str, default="False", help='coarsen')
     parser.add_argument('--priv', type=str, default="False", help='priv')
+    parser.add_argument('--max_nodes', type=int, default=20, help='max_nodes')
     args = parser.parse_args()
-    execute_fl(args)
+    if args.coarsen=='False':
+        coarsen=[False]
+    elif args.coarsen=='True':
+        coarsen=[True]
+    else:
+        coarsen=[False,True]
+    if args.priv=='False':
+        priv=[False]
+    elif args.priv=='True':
+        priv=[True]
+    else:
+        priv=[False,True]
+    experiment_path=f"{args.output}/{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.ncl}_{args.rounds}_{args.target_ratio}_{args.epochs}_{args.strat}_{args.coarsen}_{args.priv}"
+    print(f"Experiment path: {experiment_path}")
+    os.makedirs(experiment_path, exist_ok=True)
+    for cr in coarsen:
+        for dp in priv:
+            print(f"Coarsen: {cr}, Priv: {dp}")
+            execute_fl(args, cr, dp, experiment_path)
     # execute(args)

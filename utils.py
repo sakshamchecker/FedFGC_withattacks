@@ -2,7 +2,7 @@
 from torch_geometric.data import DenseDataLoader, DataLoader
 import numpy as np
 from privacy.coarsening import coarsen_a_data
-def train_a_model(target_model, dataset, target_indices, attack_test_indices, num_epochs, batch_size=32, coarsen=False):
+def train_a_model(target_model, dataset, target_indices, attack_test_indices, num_epochs, batch_size=32, coarsen=False, dp=False, dp_params=[]):
     # dataset=DataLoader(dataset, batch_size=batch_size)
     # for data in dataset:
     #     graphs=data.to_data_list()
@@ -15,7 +15,7 @@ def train_a_model(target_model, dataset, target_indices, attack_test_indices, nu
     target_test_loader = DenseDataLoader(target_test_dataset, batch_size=batch_size)
     if coarsen:
         target_train_loader=coarsen_a_data(cus_dataloader=target_train_loader, coarsen_params=[0.01, 0.01, 0.01, 0.01], batch_size=batch_size)
-    target_model.train_model(target_train_loader, target_test_loader, num_epochs)
+    target_model.train_model(target_train_loader, target_test_loader, num_epochs, dp, dp_params)
     test_accuracy=target_model.evaluate_model(target_test_loader)
     
     def save_target_model_paras(target_model):
