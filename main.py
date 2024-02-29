@@ -81,11 +81,9 @@ def execute_fl(args, cr, dp, experiment_path):
    
     dataset=load_raw_data("PROTEINS", max_nodes=args.max_nodes)
     target_indices, shadow_indices, attack_train_indices, attack_test_indices, idxs = split_data_to_clients(dataset=dataset, num_clients=args.ncl, alpha=args.alpha, target_ratio=args.target_ratio, shadow_ratio=args.shadow_ratio, attack_train_ratio=args.attack_train_ratio)
-    #print length  of each val in idx
-    for i in range(len(idxs)):
-        print(len(idxs[i]))
-    for i in range(len(target_indices)):
-        print(len(target_indices[i]))
+    #print length  of each val in id
+    for i in range(len(attack_test_indices)):
+        print(len(attack_test_indices[i]))
     if args.coarsen=='all':
         corasen=[False,True]
     elif args.coarsen=='true':
