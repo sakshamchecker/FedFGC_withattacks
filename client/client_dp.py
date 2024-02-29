@@ -51,7 +51,7 @@ class FlowerClient(fl.client.NumPyClient):
         # params,avg_loss=train(args=self.args, model=self.model, device=self.device, train_graphs=self.trainloader[self.cid], epochs=self.epochs, test_graphs=self.valloader, dp=self.dp)
         # self.set_parameters(params)
         # loss, accuracy = test(self.model, self.trainloader[self.cid], self.device)
-        test_accuracy=train_a_model(target_model=self.model, dataset=self.dataset, target_indices=self.trainloader[self.cid], attack_test_indices=self.valloader, num_epochs=self.epochs, batch_size=8, coarsen=True)
+        test_accuracy=train_a_model(target_model=self.model, dataset=self.dataset, target_indices=self.trainloader, attack_test_indices=self.valloader, num_epochs=self.epochs, batch_size=8, coarsen=True)
         # loss, accuracy = test(args=self.args, model=self.model, device=self.device, test_graphs=self.trainloader[self.cid])
         loss=0
         accuracy=test_a_model(target_model=self.model,dataset=self.dataset, attack_test_indices=self.trainloader)
