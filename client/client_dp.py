@@ -102,6 +102,7 @@ class FlowerClient(fl.client.NumPyClient):
         data.to_csv(f"{self.path}/results.csv")
         for att in self.attacks:
             if att=="infer":
+                print("attacked")
                 pretrained_infer="pretrained/PROTEINS_PROTEINS_diff_pool_diff_pool_2"
                 attack_property(target_model=self.model, dataset=self.dataset, attack_test_indices=self.valloader, num_runs=1, prop_infer_file=pretrained_infer, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], path=self.path, cid=self.cid, cr=self.state, dp=self.dp)
         return loss, int(len(self.valloader)), {"accuracy": accuracy}
