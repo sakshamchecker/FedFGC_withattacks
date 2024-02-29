@@ -7,6 +7,10 @@ import flwr as fl
 
 
 from collections import OrderedDict
+from typing import Dict, Tuple
+import flwr as fl
+#write code to import scalar
+from flwr.common import Scalar
 import pandas as pd
 import numpy as np
 import sys
@@ -69,7 +73,7 @@ class FlowerClient(fl.client.NumPyClient):
         # loss,accuracy = test(args=self.args, model=self.model, device=self.device, test_graphs=self.valloader)
         
         return self.get_parameters({}), len(self.trainloader), {}
-    def evaluate(self, parameters, config):
+    def evaluate(self, parameters, config)->Tuple[float, int, Dict[str, Scalar]]:
         print(f"Evaluating client {self.cid}")
         self.set_parameters(parameters)
         # loss,accuracy = test(self.model, self.valloader, self.device)
@@ -96,4 +100,4 @@ class FlowerClient(fl.client.NumPyClient):
         data=pd.concat([data, pd.Series(['FL', self.state, self.dp, "Test",config['server_round']-1, self.cid, tranc_floating(loss), tranc_floating(accuracy)], index=data.columns).to_frame().T], ignore_index=True)
         data.to_csv(f"{self.path}/results.csv")
         print("-----------------------------{loss}, {}, {accuracy}")    
-        return (loss, len(self.valloader), {"accuracy": accuracy})
+        return loss, int(len(self.valloader)), {"accuracy": accuracy}
