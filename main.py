@@ -59,12 +59,14 @@ def load_raw_data( dataset_name,max_nodes=1000, use_feat=True):
 def execute(args, cr, dp, experiment_path):
     # pretrainedvae="pretrained/PROTEINS_PROTEINS_diff_pool_diff_pool_2"
     dataset=load_raw_data("MUTAG")
-    target_indices, shadow_indices, attack_train_indices, attack_test_indices = split_data(dataset, 0.4, 0.0, 0.3)
+    # target_indices, shadow_indices, attack_train_indices, attack_test_indices = split_data(dataset, 0.4, 0.0, 0.3)
+    target_indices, shadow_indices, attack_train_indices, attack_test_indices, idxs = split_data_to_clients(dataset=dataset, num_clients=args.ncl, alpha=args.alpha, target_ratio=args.target_ratio, shadow_ratio=args.shadow_ratio, attack_train_ratio=args.attack_train_ratio)
+    
     print("Data Loaded")
     target_model = DiffPool(feat_dim=dataset.num_features, num_classes=dataset.num_classes, max_nodes=20, args=args)
     # print(target_model.model)
     print("Model Loaded")
-    test_accuracy=train_a_model(target_model, dataset, target_indices, attack_test_indices, num_epochs=args.epochs, batch_size=8, coarsen=cr, dp=dp, dp_params=[1.1, 0.3])
+    test_accuracy=train_a_model(target_model, dataset, target_indices[0], attack_test_indices[0], num_epochs=args.epochs, batch_size=8, coarsen=cr, dp=dp, dp_params=[1.1, 0.3])
     train_accuracy=test_a_model(target_model, dataset, attack_test_indices)
     print(f"Test Accuracy: {test_accuracy}")
     print(f"Train Accuracy: {train_accuracy}")
@@ -168,12 +170,12 @@ if __name__=="__main__":
     experiment_path=f"{args.output}/{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.ncl}_{args.rounds}_{args.target_ratio}_{args.epochs}_{args.strat}_{args.coarsen}_{args.priv}"
     print(f"Experiment path: {experiment_path}")
     os.makedirs(experiment_path, exist_ok=True)
-    # for cr in coarsen:
-    #     for dp in priv:
-    #         print(f"Coarsen: {cr}, Priv: {dp}")
-    #         execute(args, cr, dp, experiment_path)
     for cr in coarsen:
         for dp in priv:
             print(f"Coarsen: {cr}, Priv: {dp}")
-            execute_fl(args, cr, dp, experiment_path)
+            execute(args, cr, dp, experiment_path)
+    # for cr in coarsen:
+    #     for dp in priv:
+    #         print(f"Coarsen: {cr}, Priv: {dp}")
+    #         execute_fl(args, cr, dp, experiment_path)
     # execute(args)
