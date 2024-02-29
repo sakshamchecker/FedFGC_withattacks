@@ -58,7 +58,7 @@ def load_raw_data( dataset_name,max_nodes=1000, use_feat=True):
 
 def execute(args, cr, dp, experiment_path, attacks):
     # pretrainedvae="pretrained/PROTEINS_PROTEINS_diff_pool_diff_pool_2"
-    dataset=load_raw_data("MUTAG")
+    dataset=load_raw_data("PROTEINS", max_nodes=args.max_nodes)
     target_indices, shadow_indices, attack_train_indices, attack_test_indices = split_data(dataset, args.target_ratio, args.shadow_ratio, args.attack_train_ratio)
 
     # target_indices, shadow_indices, attack_train_indices, attack_test_indices, idxs = split_data_to_clients(dataset=dataset, num_clients=args.ncl, alpha=args.alpha, target_ratio=args.target_ratio, shadow_ratio=args.shadow_ratio, attack_train_ratio=args.attack_train_ratio)
