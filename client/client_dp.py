@@ -20,10 +20,10 @@ import copy
 # Define Flower client
 
 class FlowerClient(fl.client.NumPyClient):
-    def __init__(self, cid, net,dataset, trainloaders, valloader, epochs, path,state, device, args, dp):
+    def __init__(self, cid, model,dataset, trainloaders, valloader, epochs, path,state, device, args, dp):
         self.cid = int(cid)
         # self.model = net(params[0], params[1], params[2])
-        self.model = net
+        self.model = model
         # GCN(hidden_channels=32, in_channels=num_node_features, out_channels=num_classes, num_layers=3)
         # self.model=net(hidden_channels=params[1], in_channels=params[0], out_channels=params[2], num_layers=3)
         self.trainloader = trainloaders
