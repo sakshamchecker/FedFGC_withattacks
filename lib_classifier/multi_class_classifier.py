@@ -5,8 +5,8 @@ import torch
 from torch.optim import SGD
 from torch.utils.data import DataLoader
 
-from classifier.classifier import Classifier
-from classifier.multi_class_net import MultiClassNet
+from lib_classifier.classifier import Classifier
+from lib_classifier.multi_class_net import MultiClassNet
 
 
 class MultiClassClassifier(Classifier):
