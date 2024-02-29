@@ -81,7 +81,7 @@ def attack_property(target_model, dataset,attack_train_indices, attack_test_indi
 
     attack.train_attack_model()
     
-    for i in num_runs:
+    for i in range(num_runs):
         acc_run.append(attack.evaluate_attack_model())
         baseline_acc_run.append(attack.baseline_acc)
     for property in properties:
