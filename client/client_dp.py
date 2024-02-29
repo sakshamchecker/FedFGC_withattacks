@@ -24,6 +24,7 @@ class FlowerClient(fl.client.NumPyClient):
         self.cid = int(cid)
         # self.model = net(params[0], params[1], params[2])
         self.model = model
+        self.dataset=dataset
         # GCN(hidden_channels=32, in_channels=num_node_features, out_channels=num_classes, num_layers=3)
         # self.model=net(hidden_channels=params[1], in_channels=params[0], out_channels=params[2], num_layers=3)
         self.trainloader = trainloaders
