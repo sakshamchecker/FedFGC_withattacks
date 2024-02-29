@@ -336,7 +336,6 @@ def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
     training_graphs=[]
     coarsen_adj,coarsen_x=[],[]
     y=[]
-    mask
     for data in tqdm(cus_dataloader):
         # print(data)
         

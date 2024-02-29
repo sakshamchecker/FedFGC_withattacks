@@ -1,6 +1,6 @@
 import argparse
 import os
-# import flwr as fl
+import flwr as fl
 from datetime import datetime
 import numpy as np
 from torch_geometric.data import DenseDataLoader
@@ -90,10 +90,15 @@ def execute_fl(args):
         priv=[False]
     cr=False
     dp=False
+    # print(type(target_indices))
+    # print(type(target_indices[0]))
+    # print(len(target_indices))
+    # print(len(target_indices[0]))
+    # print(len(list(target_indices[0])))
     def client_fn(client_id):
         target_model = DiffPool(feat_dim=dataset.num_features, num_classes=dataset.num_classes, max_nodes=1000, args=None)
         # return FlowerClient(cid, net, train_loaders, valloader, args.epochs, path=path, state=coarsen, device=device, args=args, dp=priv)
-        return FlowerClient(client_id=client_id, model=target_model, dataset=dataset, trainloaders=target_indices[client_id], test_loader=attack_test_indices[client_id], num_epochs=args.epochs, path=experiment_path, state=cr, device="cuda", args=args, dp=dp)
+        return FlowerClient(cid=client_id, model=target_model, dataset=dataset, trainloaders=target_indices[int(client_id)], test_loader=attack_test_indices[int(client_id)], num_epochs=args.epochs, path=experiment_path, state=cr, device="cuda", args=args, dp=dp)
     ray_args = {'num_cpus':1, 'num_gpus':0}
     client_resources = {"num_cpus": 1, "num_gpus": 0}
     if args.strat=="FedAvg":
@@ -143,5 +148,5 @@ if __name__=="__main__":
     parser.add_argument('--coarsen', type=str, default="False", help='coarsen')
     parser.add_argument('--priv', type=str, default="False", help='priv')
     args = parser.parse_args()
-    # execute_fl(args)
-    execute(args)
+    execute_fl(args)
+    # execute(args)
