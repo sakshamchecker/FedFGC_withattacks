@@ -39,8 +39,6 @@ class DiffPool(GNNBase):
                 data = data.to(self.device)
                 
                 optimizer.zero_grad()
-                print(data.x.shape)
-                print(data.adj.shape)
                 # print(data.mask.shape)
                 # exit()
                 output, link_loss, entropy_loss = self.model(data.x, data.adj)
