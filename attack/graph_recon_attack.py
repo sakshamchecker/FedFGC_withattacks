@@ -436,7 +436,7 @@ class AttackGraphRecon(Attack):
     def init_graph_vae(self, dataset, embedding_dim, max_nodes):
         self.graph_vae = GraphVAE(dataset.num_features, embedding_dim,
                                   dataset.num_classes, max_nodes)
-        print(self.graph_vae.model)
+        # print(self.graph_vae.model)
         # exit()
     def train_gae(self, train_dataset, num_epoch):
         self.logger.info('training gae model')
