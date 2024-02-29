@@ -78,7 +78,7 @@ class FlowerClient(fl.client.NumPyClient):
         self.set_parameters(parameters)
         # loss,accuracy = test(self.model, self.valloader, self.device)
         # loss, accuracy = test(args=self.args, model=self.model, device=self.device, test_graphs=self.valloader)
-        loss=0
+        loss=0.0
         accuracy=test_a_model(target_model=self.model,dataset=self.dataset, attack_test_indices=self.valloader)
         try:
             os.mkdir(f"{self.path}/clientwise")
