@@ -9,7 +9,7 @@ from torch.utils.data import TensorDataset
 import networkx as nx
 
 # from lib_classifier.multi_class_classifier import MultiClassClassifier
-from classifier.multi_class_classifier import MultiClassClassifier
+from lib_classifier.multi_class_classifier import MultiClassClassifier
 
 
 
