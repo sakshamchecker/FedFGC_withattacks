@@ -179,9 +179,8 @@ if __name__=="__main__":
     #     for dp in priv:
     #         print(f"Coarsen: {cr}, Priv: {dp}")
     #         execute(args, cr, dp, experiment_path)
-    for att in attacks:
-        for cr in coarsen:
-            for dp in priv:
-                print(f"Coarsen: {cr}, Priv: {dp}")
-                execute_fl(args, cr, dp, experiment_path, att=att)
+    for cr in coarsen:
+        for dp in priv:
+            print(f"Coarsen: {cr}, Priv: {dp}")
+            execute_fl(args, cr, dp, experiment_path, att=attacks)
     execute(args)
