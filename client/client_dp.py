@@ -95,5 +95,5 @@ class FlowerClient(fl.client.NumPyClient):
             data=pd.DataFrame(columns=["Method","Coarsen","Priv","Data","Round", "Client Number", "Loss","Accuracy"])
         data=pd.concat([data, pd.Series(['FL', self.state, self.dp, "Test",config['server_round']-1, self.cid, tranc_floating(loss), tranc_floating(accuracy)], index=data.columns).to_frame().T], ignore_index=True)
         data.to_csv(f"{self.path}/results.csv")
-
+        print("-----------------------------{loss}, {}, {accuracy}")    
         return (loss, len(self.valloader), {"accuracy": accuracy})
