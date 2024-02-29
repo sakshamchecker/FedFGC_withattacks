@@ -55,7 +55,7 @@ def attack_recon(target_model,dataset, attack_test_indices, max_nodes, recon_sta
         for graph_recon_stat in recon_stat:
             for graph_recon_metric in recon_metrics:
                 f.write(f"{cid},{round},{cr},{dp},{graph_recon_stat}, {graph_recon_metric}, {graph_recon_stat_data[graph_recon_stat][graph_recon_metric][0]}, {graph_recon_stat_data[graph_recon_stat][graph_recon_metric][1]}\n")
-def attack_property(target_model, dataset,attack_train_indices, attack_test_indices,num_runs, prop_infer_file, properties, path, cid, cr, dp, prop_data_file):
+def attack_property(target_model, dataset,attack_train_indices, attack_test_indices,num_runs, prop_infer_file, properties, path, cid, cr, dp):
     acc_run=[]
     baseline_acc_run=[]
     acc={}

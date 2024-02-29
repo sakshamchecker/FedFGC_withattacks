@@ -81,7 +81,7 @@ def execute(args, cr, dp, experiment_path, attacks):
             pretrained_infer="pretrained/PROTEINS_PROTEINS_diff_pool_diff_pool_2"
             # attack_property(target_model=target_model, dataset=dataset, attack_test_indices=attack_test_indices, num_runs=3, prop_infer_file=pretrained_infer, properties=['num_nodes', 'num_edges', 'density', 'diameter', 'radius'], path=experiment_path, cid=-1, cr=cr, dp=dp, prop_data_file=pretrained_data)
 
-            attack_property(target_model=target_model, dataset=dataset,attack_train_indices=attack_train_indices, attack_test_indices=attack_test_indices, num_runs=1, prop_infer_file=pretrained_infer, properties=['num_nodes', 'num_edges', 'density', 'diameter', 'radius'], path=experiment_path, cid=-1, cr=cr, dp=dp, prop_data_file=pretrained_data)
+            attack_property(target_model=target_model, dataset=dataset,attack_train_indices=attack_train_indices, attack_test_indices=attack_test_indices, num_runs=1, prop_infer_file=pretrained_infer, properties=['num_nodes', 'num_edges', 'density', 'diameter', 'radius'], path=experiment_path, cid=-1, cr=cr, dp=dp)
     # attack_property(target_model=target_model, dataset=dataset, attack_test_indices=attack_test_indices, num_runs=3, prop_infer_file=pretrainedvae, properties=['num_nodes', 'num_edges', 'density', 'diameter', 'radius'])
     # attack(target_model, dataset, attack_test_indices, max_nodes=20, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], num_runs=1, graph_vae_model_file=pretrainedvae)
 # execute(None)
@@ -90,7 +90,7 @@ def execute_fl(args, cr, dp, experiment_path, att):
     # experiment_path = f"{args.output}/{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.ncl}_{args.rounds}_{args.tr_ratio}_{args.epochs}_{args.data}_{args.strat}"
    
     dataset=load_raw_data("PROTEINS", max_nodes=args.max_nodes)
-    target_indices, shadow_indices, attack_train_indices, attack_test_indices, idxs = split_data_to_clients(dataset=dataset, num_clients=args.ncl, alpha=args.alpha, target_ratio=args.target_ratio, shadow_ratio=args.shadow_ratio, attack_train_ratio=args.attack_train_ratio)
+    target_indices, shadow_indices, attack_train_indices, attack_test_indices, attack_test_complete, idxs = split_data_to_clients(dataset=dataset, num_clients=args.ncl, alpha=args.alpha, target_ratio=args.target_ratio, shadow_ratio=args.shadow_ratio, attack_train_ratio=args.attack_train_ratio)
     #print length  of each val in id
     for i in range(len(attack_test_indices)):
         print(len(attack_test_indices[i]))
@@ -114,7 +114,7 @@ def execute_fl(args, cr, dp, experiment_path, att):
     def client_fn(client_id):
         target_model = DiffPool(feat_dim=dataset.num_features, num_classes=dataset.num_classes, max_nodes=20, args=None)
         # return FlowerClient(cid, net, train_loaders, valloader, args.epochs, path=path, state=coarsen, device=device, args=args, dp=priv)
-        return FlowerClient(cid=client_id, model=target_model, dataset=dataset, trainloaders=target_indices[int(client_id)], valloader=attack_test_indices[int(client_id)], epochs=args.epochs, path=experiment_path, state=cr, device="cuda", args=args, dp=dp, cr=cr, attacks=att)
+        return FlowerClient(cid=client_id, model=target_model, dataset=dataset, trainloaders=target_indices[int(client_id)], valloader=attack_test_indices[int(client_id)], epochs=args.epochs, path=experiment_path, state=cr, device="cuda", args=args, dp=dp, cr=cr, attacks=att, attack_train_indices=attack_train_indices, attack_test_complete=attack_test_complete)
     ray_args = {'num_cpus':1, 'num_gpus':0}
     client_resources = {"num_cpus": 1, "num_gpus": 0}
     if args.strat=="FedAvg":

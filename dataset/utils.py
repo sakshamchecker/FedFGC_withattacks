@@ -62,11 +62,14 @@ def split_data_to_clients(dataset, num_clients, alpha, target_ratio, shadow_rati
     # print(len(idxs[1]))
     #for all clients, extract the idxs from the dataset and pass it to split data and return the list of target_indices, shadow_indices, attack_train_indices, attack_test_indices
     target_indices, shadow_indices, attack_train_indices, attack_test_indices = [], [], [], []
+    attack_test_complete=[]
     for i in range(num_clients):
         target_idx, shadow_idx, attack_train_idx, attack_test_idx = split_data(dataset[idxs[i]], target_ratio, shadow_ratio, attack_train_ratio)
         target_indices.append(target_idx)
         shadow_indices.append(shadow_idx)
-        attack_train_indices.append(attack_train_idx)
+        # attack_train_indices.append(attack_train_idx)
+        attack_train_indices=attack_train_indices+list(attack_train_idx)
         attack_test_indices.append(attack_test_idx)
-    return target_indices, shadow_indices, attack_train_indices, attack_test_indices, idxs
+        attack_test_complete=attack_test_complete+list(attack_test_idx)
+    return target_indices, shadow_indices, attack_train_indices, attack_test_indices, attack_test_complete, idxs
 
