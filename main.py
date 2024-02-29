@@ -94,7 +94,7 @@ def execute_fl(args, cr, dp, experim):
     def client_fn(client_id):
         target_model = DiffPool(feat_dim=dataset.num_features, num_classes=dataset.num_classes, max_nodes=20, args=None)
         # return FlowerClient(cid, net, train_loaders, valloader, args.epochs, path=path, state=coarsen, device=device, args=args, dp=priv)
-        return FlowerClient(cid=client_id, model=target_model, dataset=dataset, trainloaders=target_indices[int(client_id)], valloader=attack_test_indices[int(client_id)], epochs=args.epochs, path=experiment_path, state=cr, device="cuda", args=args, dp=dp)
+        return FlowerClient(cid=client_id, model=target_model, dataset=dataset, trainloaders=target_indices[int(client_id)], valloader=attack_test_indices[int(client_id)], epochs=args.epochs, path=experiment_path, state=cr, device="cuda", args=args, dp=dp, cr=cr)
     ray_args = {'num_cpus':1, 'num_gpus':0}
     client_resources = {"num_cpus": 1, "num_gpus": 0}
     if args.strat=="FedAvg":
