@@ -9,7 +9,7 @@ from dataset.data_store import DataStore
 from dataset.tu_dataset import TUDataset
 # from torch_geometric.datasets import TUDataset
 import torch_geometric.transforms as T
-from utils import train_a_model
+from utils import train_a_model, test_a_model
 from dataset.utils import split_data, split_data_to_clients
 from client.client_dp import FlowerClient
 from server.server import FedAvgWithAccuracyMetric, FedOptAdamStrategy, FedProxWithAccuracyMetric, fit_config, evaluate_config
@@ -56,20 +56,23 @@ def load_raw_data( dataset_name,max_nodes=1000, use_feat=True):
         return dataset
 
 
-def execute(args):
+def execute(args, cr, dp, experiment_path):
     # pretrainedvae="pretrained/PROTEINS_PROTEINS_diff_pool_diff_pool_2"
     dataset=load_raw_data("MUTAG")
     target_indices, shadow_indices, attack_train_indices, attack_test_indices = split_data(dataset, 0.4, 0.0, 0.3)
     print("Data Loaded")
     target_model = DiffPool(feat_dim=dataset.num_features, num_classes=dataset.num_classes, max_nodes=20, args=args)
-    print(target_model.model)
+    # print(target_model.model)
     print("Model Loaded")
-    train_a_model(target_model, dataset, target_indices, attack_test_indices, 1, batch_size=8, coarsen=True)
+    test_accuracy=train_a_model(target_model, dataset, target_indices, attack_test_indices, num_epochs=args.epochs, batch_size=8, coarsen=cr, dp=dp, dp_params=[1.1, 0.3])
+    train_accuracy=test_a_model(target_model, dataset, attack_test_indices)
+    print(f"Test Accuracy: {test_accuracy}")
+    print(f"Train Accuracy: {train_accuracy}")
     # attack_property(target_model=target_model, dataset=dataset, attack_test_indices=attack_test_indices, num_runs=3, prop_infer_file=pretrainedvae, properties=['num_nodes', 'num_edges', 'density', 'diameter', 'radius'])
     # attack(target_model, dataset, attack_test_indices, max_nodes=20, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], num_runs=1, graph_vae_model_file=pretrainedvae)
 # execute(None)
 
-def execute_fl(args, cr, dp, experim):
+def execute_fl(args, cr, dp, experiment_path):
     # experiment_path = f"{args.output}/{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.ncl}_{args.rounds}_{args.tr_ratio}_{args.epochs}_{args.data}_{args.strat}"
    
     dataset=load_raw_data("PROTEINS", max_nodes=args.max_nodes)
@@ -160,6 +163,10 @@ if __name__=="__main__":
     experiment_path=f"{args.output}/{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.ncl}_{args.rounds}_{args.target_ratio}_{args.epochs}_{args.strat}_{args.coarsen}_{args.priv}"
     print(f"Experiment path: {experiment_path}")
     os.makedirs(experiment_path, exist_ok=True)
+    for cr in coarsen:
+        for dp in priv:
+            print(f"Coarsen: {cr}, Priv: {dp}")
+            execute(args, cr, dp, experiment_path)
     for cr in coarsen:
         for dp in priv:
             print(f"Coarsen: {cr}, Priv: {dp}")
