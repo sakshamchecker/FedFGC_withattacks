@@ -61,7 +61,8 @@ def execute(args, cr, dp, experiment_path):
     dataset=load_raw_data("MUTAG")
     # target_indices, shadow_indices, attack_train_indices, attack_test_indices = split_data(dataset, 0.4, 0.0, 0.3)
     target_indices, shadow_indices, attack_train_indices, attack_test_indices, idxs = split_data_to_clients(dataset=dataset, num_clients=args.ncl, alpha=args.alpha, target_ratio=args.target_ratio, shadow_ratio=args.shadow_ratio, attack_train_ratio=args.attack_train_ratio)
-    
+    for i in range(len(attack_test_indices)):
+        print(len(attack_test_indices[i]))
     print("Data Loaded")
     target_model = DiffPool(feat_dim=dataset.num_features, num_classes=dataset.num_classes, max_nodes=20, args=args)
     # print(target_model.model)
