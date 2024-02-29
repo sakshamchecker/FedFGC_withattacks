@@ -80,6 +80,8 @@ def execute_fl(args, cr, dp, experiment_path):
     #print length  of each val in idx
     for i in range(len(idxs)):
         print(len(idxs[i]))
+    for i in range(len(target_indices)):
+        print(len(target_indices[i]))
     if args.coarsen=='all':
         corasen=[False,True]
     elif args.coarsen=='true':
@@ -166,10 +168,10 @@ if __name__=="__main__":
     experiment_path=f"{args.output}/{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.ncl}_{args.rounds}_{args.target_ratio}_{args.epochs}_{args.strat}_{args.coarsen}_{args.priv}"
     print(f"Experiment path: {experiment_path}")
     os.makedirs(experiment_path, exist_ok=True)
-    for cr in coarsen:
-        for dp in priv:
-            print(f"Coarsen: {cr}, Priv: {dp}")
-            execute(args, cr, dp, experiment_path)
+    # for cr in coarsen:
+    #     for dp in priv:
+    #         print(f"Coarsen: {cr}, Priv: {dp}")
+    #         execute(args, cr, dp, experiment_path)
     for cr in coarsen:
         for dp in priv:
             print(f"Coarsen: {cr}, Priv: {dp}")
