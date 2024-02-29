@@ -76,7 +76,7 @@ def execute(args, cr, dp, experiment_path):
     # attack(target_model, dataset, attack_test_indices, max_nodes=20, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], num_runs=1, graph_vae_model_file=pretrainedvae)
 # execute(None)
 
-def execute_fl(args, cr, dp, experiment_path):
+def execute_fl(args, cr, dp, experiment_path, att):
     # experiment_path = f"{args.output}/{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.ncl}_{args.rounds}_{args.tr_ratio}_{args.epochs}_{args.data}_{args.strat}"
    
     dataset=load_raw_data("PROTEINS", max_nodes=args.max_nodes)
@@ -104,7 +104,7 @@ def execute_fl(args, cr, dp, experiment_path):
     def client_fn(client_id):
         target_model = DiffPool(feat_dim=dataset.num_features, num_classes=dataset.num_classes, max_nodes=20, args=None)
         # return FlowerClient(cid, net, train_loaders, valloader, args.epochs, path=path, state=coarsen, device=device, args=args, dp=priv)
-        return FlowerClient(cid=client_id, model=target_model, dataset=dataset, trainloaders=target_indices[int(client_id)], valloader=attack_test_indices[int(client_id)], epochs=args.epochs, path=experiment_path, state=cr, device="cuda", args=args, dp=dp, cr=cr)
+        return FlowerClient(cid=client_id, model=target_model, dataset=dataset, trainloaders=target_indices[int(client_id)], valloader=attack_test_indices[int(client_id)], epochs=args.epochs, path=experiment_path, state=cr, device="cuda", args=args, dp=dp, cr=cr, attacks=att)
     ray_args = {'num_cpus':1, 'num_gpus':0}
     client_resources = {"num_cpus": 1, "num_gpus": 0}
     if args.strat=="FedAvg":
@@ -154,6 +154,7 @@ if __name__=="__main__":
     parser.add_argument('--coarsen', type=str, default="False", help='coarsen')
     parser.add_argument('--priv', type=str, default="False", help='priv')
     parser.add_argument('--max_nodes', type=int, default=20, help='max_nodes')
+    parser.add_argument('--attacks', type=str, default="infer", help='attacks')
     args = parser.parse_args()
     if args.coarsen=='False':
         coarsen=[False]
@@ -167,6 +168,10 @@ if __name__=="__main__":
         priv=[True]
     else:
         priv=[False,True]
+    if args.attacks=='all':
+        attacks=["infer","recon"]
+    else:
+        attacks=[args.attacks]
     experiment_path=f"{args.output}/{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.ncl}_{args.rounds}_{args.target_ratio}_{args.epochs}_{args.strat}_{args.coarsen}_{args.priv}"
     print(f"Experiment path: {experiment_path}")
     os.makedirs(experiment_path, exist_ok=True)
@@ -174,8 +179,9 @@ if __name__=="__main__":
     #     for dp in priv:
     #         print(f"Coarsen: {cr}, Priv: {dp}")
     #         execute(args, cr, dp, experiment_path)
-    for cr in coarsen:
-        for dp in priv:
-            print(f"Coarsen: {cr}, Priv: {dp}")
-            execute_fl(args, cr, dp, experiment_path)
+    for att in attacks:
+        for cr in coarsen:
+            for dp in priv:
+                print(f"Coarsen: {cr}, Priv: {dp}")
+                execute_fl(args, cr, dp, experiment_path)
     execute(args)

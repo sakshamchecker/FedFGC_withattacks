@@ -2,6 +2,7 @@ from attack.graph_recon_attack import AttackGraphRecon
 from collections import defaultdict
 from attack.property_infer import Attack
 import numpy as np
+import os
 def attack_recon(target_model,dataset, attack_test_indices, max_nodes, recon_stat, recon_metrics, num_runs, graph_vae_model_file):
     attack = AttackGraphRecon(target_model.model, max_nodes)
     # paras=target_model.paras
@@ -44,7 +45,7 @@ def attack_recon(target_model,dataset, attack_test_indices, max_nodes, recon_sta
             print('graph_recon_stat: %s, graph_recon_metric: %s, %s' %
                                 (graph_recon_stat, graph_recon_metric, metric_value))
 
-def attack_property(target_model, dataset, attack_test_indices,num_runs, prop_infer_file, properties):
+def attack_property(target_model, dataset, attack_test_indices,num_runs, prop_infer_file, properties, path, cid, cr, dp):
     acc_run=[]
     baseline_acc_run=[]
     acc={}
@@ -73,3 +74,11 @@ def attack_property(target_model, dataset, attack_test_indices,num_runs, prop_in
             baseline_acc[property] = [np.mean(baseline_run_data), np.std(baseline_run_data)]
     print(acc)
     print(baseline_acc)
+    try:
+        os.mkdir(f"{path}/attack")
+    except:
+        print("")
+    with open(f"{path}/attack/attack_results.csv", "w") as f:
+        f.write(f"cid","cr","dp","Property, Accuracy, Baseline Accuracy\n")
+        for property in properties:
+            f.write(f"{cid},{cr},{dp},{property}, {acc[property][0]}, {baseline_acc[property][0]}\n")

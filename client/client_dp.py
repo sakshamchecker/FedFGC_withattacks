@@ -20,11 +20,12 @@ from privacy.dp import dp as DiffP
 import os
 import torch
 import copy
+from attack.attacks import attack_property
 
 # Define Flower client
 
 class FlowerClient(fl.client.NumPyClient):
-    def __init__(self, cid, model,dataset, trainloaders, valloader, epochs, path,state, device, args, dp, cr):
+    def __init__(self, cid, model,dataset, trainloaders, valloader, epochs, path,state, device, args, dp, cr,attacks):
         self.cid = int(cid)
         # self.model = net(params[0], params[1], params[2])
         self.model = model
@@ -40,6 +41,7 @@ class FlowerClient(fl.client.NumPyClient):
         self.args = args
         self.dp=dp
         self.cr=cr
+        self.attacks=attacks
     def get_parameters(self, config):
         return [val.cpu().numpy() for name, val in self.model.model.state_dict().items() if 'num_batches_tracked' not in name]
 
@@ -68,10 +70,12 @@ class FlowerClient(fl.client.NumPyClient):
             data=pd.DataFrame(columns=["Method","Coarsen","Priv","Data","Round", "Client Number", "Loss","Accuracy"])
         data=pd.concat([data, pd.Series(['FL', self.state, self.dp, "Train",config['server_round']-1, self.cid, tranc_floating(loss), tranc_floating(accuracy)], index=data.columns).to_frame().T], ignore_index=True)
         data.to_csv(f"{self.path}/results_train.csv")
-        
+        for att in self.attacks:
+            if att=="infer":
+                pretrained_infer="pretrained/PROTEINS_PROTEINS_diff_pool_diff_pool_2"
+                attack_property(target_model=self.model, dataset=self.dataset, attack_test_indices=self.valloader, num_runs=1, prop_infer_file=pretrained_infer, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], path=self.path, cid=self.cid, cr=self.state, dp=self.dp)
         # loss, accuracy = test(self.model, self.valloader, self.device)
         # loss,accuracy = test(args=self.args, model=self.model, device=self.device, test_graphs=self.valloader)
-        
         return self.get_parameters({}), len(self.trainloader), {}
     def evaluate(self, parameters, config)->Tuple[float, int, Dict[str, Scalar]]:
         print(f"Evaluating client {self.cid}")
