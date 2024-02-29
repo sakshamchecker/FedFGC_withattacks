@@ -79,9 +79,9 @@ def execute(args, cr, dp, experiment_path, attacks):
         elif att=='infer':
             pretrained_data="pretrained/PROTEINS_diff_pool_data"
             pretrained_infer="pretrained/PROTEINS_PROTEINS_diff_pool_diff_pool_2"
-            attack_property(target_model=target_model, dataset=dataset, attack_test_indices=attack_test_indices, num_runs=3, prop_infer_file=pretrained_infer, properties=['num_nodes', 'num_edges', 'density', 'diameter', 'radius'], path=experiment_path, cid=-1, cr=cr, dp=dp, prop_data_file=pretrained_data)
+            # attack_property(target_model=target_model, dataset=dataset, attack_test_indices=attack_test_indices, num_runs=3, prop_infer_file=pretrained_infer, properties=['num_nodes', 'num_edges', 'density', 'diameter', 'radius'], path=experiment_path, cid=-1, cr=cr, dp=dp, prop_data_file=pretrained_data)
 
-            # attack_property(target_model=target_model, dataset=dataset,attack_train_indices=attack_train_indices, attack_test_indices=attack_test_indices, num_runs=3, prop_infer_file=pretrained_infer, properties=['num_nodes', 'num_edges', 'density', 'diameter', 'radius'], path=experiment_path, cid=-1, cr=cr, dp=dp, prop_data_file=pretrained_data)
+            attack_property(target_model=target_model, dataset=dataset,attack_train_indices=attack_train_indices, attack_test_indices=attack_test_indices, num_runs=3, prop_infer_file=pretrained_infer, properties=['num_nodes', 'num_edges', 'density', 'diameter', 'radius'], path=experiment_path, cid=-1, cr=cr, dp=dp, prop_data_file=pretrained_data)
     # attack_property(target_model=target_model, dataset=dataset, attack_test_indices=attack_test_indices, num_runs=3, prop_infer_file=pretrainedvae, properties=['num_nodes', 'num_edges', 'density', 'diameter', 'radius'])
     # attack(target_model, dataset, attack_test_indices, max_nodes=20, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], num_runs=1, graph_vae_model_file=pretrainedvae)
 # execute(None)
