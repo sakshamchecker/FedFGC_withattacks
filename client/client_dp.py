@@ -20,7 +20,7 @@ from privacy.dp import dp as DiffP
 import os
 import torch
 import copy
-from attack.attacks import attack_property
+from attack.attacks import attack_property, attack_recon
 
 # Define Flower client
 
@@ -105,4 +105,8 @@ class FlowerClient(fl.client.NumPyClient):
                 print("attacked")
                 pretrained_infer="pretrained/PROTEINS_PROTEINS_diff_pool_diff_pool_2"
                 attack_property(target_model=self.model, dataset=self.dataset, attack_test_indices=self.valloader, num_runs=1, prop_infer_file=pretrained_infer, properties=['num_nodes', 'num_edges', 'density', 'diameter', 'radius'], path=self.path, cid=self.cid, cr=self.state, dp=self.dp)
+            elif att=='recon':
+                if att=='recon':
+                    pretrainedvae="pretrained/PROTEINS_diff_pool.zip"
+                    attack_recon(self.model, self.dataset, self.valloader, max_nodes=20, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], num_runs=1, graph_vae_model_file=pretrainedvae, experiment_path=self.path, cid=self.cid, cr=self.cr, dp=self.dp)
         return loss, int(len(self.valloader)), {"accuracy": accuracy}
