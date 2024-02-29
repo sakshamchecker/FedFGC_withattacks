@@ -59,10 +59,11 @@ def load_raw_data( dataset_name,max_nodes=1000, use_feat=True):
 def execute(args, cr, dp, experiment_path):
     # pretrainedvae="pretrained/PROTEINS_PROTEINS_diff_pool_diff_pool_2"
     dataset=load_raw_data("MUTAG")
-    # target_indices, shadow_indices, attack_train_indices, attack_test_indices = split_data(dataset, 0.4, 0.0, 0.3)
-    target_indices, shadow_indices, attack_train_indices, attack_test_indices, idxs = split_data_to_clients(dataset=dataset, num_clients=args.ncl, alpha=args.alpha, target_ratio=args.target_ratio, shadow_ratio=args.shadow_ratio, attack_train_ratio=args.attack_train_ratio)
-    for i in range(len(attack_test_indices)):
-        print(len(attack_test_indices[i]))
+    target_indices, shadow_indices, attack_train_indices, attack_test_indices = split_data(dataset, args.target_ratio, args.shadow_ratio, args.attack_train_ratio)
+
+    # target_indices, shadow_indices, attack_train_indices, attack_test_indices, idxs = split_data_to_clients(dataset=dataset, num_clients=args.ncl, alpha=args.alpha, target_ratio=args.target_ratio, shadow_ratio=args.shadow_ratio, attack_train_ratio=args.attack_train_ratio)
+    # for i in range(len(attack_test_indices)):
+    #     print(len(attack_test_indices[i]))
     print("Data Loaded")
     target_model = DiffPool(feat_dim=dataset.num_features, num_classes=dataset.num_classes, max_nodes=20, args=args)
     # print(target_model.model)
@@ -147,7 +148,7 @@ if __name__=="__main__":
     parser.add_argument('--alpha', type=float, default=10, help='alpha')
     parser.add_argument('--target_ratio', type=float, default=0.7, help='target_ratio')
     parser.add_argument('--shadow_ratio', type=float, default=0.0, help='shadow_ratio')
-    parser.add_argument('--attack_train_ratio', type=float, default=0.3, help='attack_train_ratio')
+    parser.add_argument('--attack_train_ratio', type=float, default=0.15, help='attack_train_ratio')
     parser.add_argument('--rounds', type=int, default=10, help='rounds')
     parser.add_argument('--epochs', type=int, default=1, help='epochs')
     parser.add_argument('--strat', type=str, default="FedAvg", help='strategy')

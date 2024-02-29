@@ -58,10 +58,12 @@ def create_non_uniform_split(alpha, idxs, client_number, is_train=True):
 def split_data_to_clients(dataset, num_clients, alpha, target_ratio, shadow_ratio, attack_train_ratio, idxs=None):
     if not idxs:
         idxs=create_non_uniform_split(alpha=alpha, idxs=list(range(len(dataset))), client_number=num_clients, is_train=True)
+    # print(len(idxs[0]))
+    # print(len(idxs[1]))
     #for all clients, extract the idxs from the dataset and pass it to split data and return the list of target_indices, shadow_indices, attack_train_indices, attack_test_indices
     target_indices, shadow_indices, attack_train_indices, attack_test_indices = [], [], [], []
     for i in range(num_clients):
-        target_idx, shadow_idx, attack_train_idx, attack_test_idx = split_data(dataset, target_ratio, shadow_ratio, attack_train_ratio)
+        target_idx, shadow_idx, attack_train_idx, attack_test_idx = split_data(dataset[idxs[i]], target_ratio, shadow_ratio, attack_train_ratio)
         target_indices.append(target_idx)
         shadow_indices.append(shadow_idx)
         attack_train_indices.append(attack_train_idx)
