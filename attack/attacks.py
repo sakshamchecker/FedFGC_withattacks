@@ -55,26 +55,24 @@ def attack_recon(target_model,dataset, attack_test_indices, max_nodes, recon_sta
         for graph_recon_stat in recon_stat:
             for graph_recon_metric in recon_metrics:
                 f.write(f"{cid},{round},{cr},{dp},{graph_recon_stat}, {graph_recon_metric}, {graph_recon_stat_data[graph_recon_stat][graph_recon_metric][0]}, {graph_recon_stat_data[graph_recon_stat][graph_recon_metric][1]}\n")
-def attack_property(target_model, dataset, attack_test_indices,num_runs, prop_infer_file, properties, path, cid, cr, dp, prop_data_file):
+def attack_property(target_model, dataset, attack_train_indices,attack_test_indices,num_runs, prop_infer_file, properties, path, cid, cr, dp, prop_data_file):
     acc_run=[]
     baseline_acc_run=[]
     acc={}
     baseline_acc={}
     attack=Attack(target_model=target_model.model, shadow_model=target_model.model, properties=properties, property_num_class=2)
     attack_test_dataset = dataset[list(attack_test_indices)]
-    # attack.generate_labels(attack_test_dataset, attack_test_dataset, property_num_class)
-    # print("generated test embedding")
-    
-    # attack.load_data(prop_data_file)
-    attack.generate_test_embedding(attack_test_dataset,192)
-    # attack.generate_labels(attack_test_dataset, attack_test_dataset, 2)
-    # print("generated labels")
-    attack.train_attack_model(is_train=False)
+    attack_train_dataset = dataset[list(attack_train_indices)]
+    attack.generate_train_embedding(attack_train_dataset, 192)
+    attack.generate_test_embedding(attack_test_dataset, 20)
+
+    attack.generate_labels(attack_train_dataset, attack_test_dataset, 2)
+    attack.train_attack_model()
     
     
-    # print("trained attack model")
-    attack.load_attack_model(prop_infer_file)
-    print("loaded attack model")
+    # # print("trained attack model")
+    # attack.load_attack_model(prop_infer_file)
+    # print("loaded attack model")
 
     
     for i in num_runs:
