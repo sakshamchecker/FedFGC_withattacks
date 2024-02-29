@@ -68,7 +68,7 @@ class FlowerClient(fl.client.NumPyClient):
         # loss, accuracy = test(self.model, self.valloader, self.device)
         # loss,accuracy = test(args=self.args, model=self.model, device=self.device, test_graphs=self.valloader)
         
-        return self.get_parameters({}), len(self.trainloader[self.cid]), {}
+        return self.get_parameters({}), len(self.trainloader), {}
     def evaluate(self, parameters, config):
         print(f"Evaluating client {self.cid}")
         self.set_parameters(parameters)
@@ -76,6 +76,10 @@ class FlowerClient(fl.client.NumPyClient):
         # loss, accuracy = test(args=self.args, model=self.model, device=self.device, test_graphs=self.valloader)
         loss=0
         accuracy=test_a_model(target_model=self.model,dataset=self.dataset, attack_test_indices=self.valloader)
+        try:
+            os.mkdir(f"{self.path}/clientwise")
+        except:
+            print("")
         try:
             os.mkdir(f"{self.path}/clientwise/{self.cid}")
             print('-------FILE CREATED---------')
