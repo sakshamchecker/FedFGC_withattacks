@@ -56,7 +56,7 @@ def load_raw_data( dataset_name,max_nodes=1000, use_feat=True):
         return dataset
 
 
-def execute(args, cr, dp, experiment_path):
+def execute(args, cr, dp, experiment_path, attacks):
     # pretrainedvae="pretrained/PROTEINS_PROTEINS_diff_pool_diff_pool_2"
     dataset=load_raw_data("MUTAG")
     target_indices, shadow_indices, attack_train_indices, attack_test_indices = split_data(dataset, args.target_ratio, args.shadow_ratio, args.attack_train_ratio)
@@ -72,6 +72,13 @@ def execute(args, cr, dp, experiment_path):
     train_accuracy=test_a_model(target_model, dataset, attack_test_indices)
     print(f"Test Accuracy: {test_accuracy}")
     print(f"Train Accuracy: {train_accuracy}")
+    for att in attacks:
+        if att=='recon':
+            attack_recon(target_model, dataset, attack_test_indices, max_nodes=20, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], num_runs=1, graph_vae_model_file=pretrainedvae)
+        elif att=='infer':
+            pretrained_infer="pretrained/PROTEINS_PROTEINS_diff_pool_diff_pool_2"
+
+            attack_property(target_model=target_model, dataset=dataset, attack_test_indices=attack_test_indices, num_runs=3, prop_infer_file=pretrained_infer, properties=['num_nodes', 'num_edges', 'density', 'diameter', 'radius'], path=experiment_path, cid=-1, cr=cr, dp=dp)
     # attack_property(target_model=target_model, dataset=dataset, attack_test_indices=attack_test_indices, num_runs=3, prop_infer_file=pretrainedvae, properties=['num_nodes', 'num_edges', 'density', 'diameter', 'radius'])
     # attack(target_model, dataset, attack_test_indices, max_nodes=20, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], num_runs=1, graph_vae_model_file=pretrainedvae)
 # execute(None)
@@ -175,10 +182,10 @@ if __name__=="__main__":
     experiment_path=f"{args.output}/{datetime.now().strftime('%Y%m%d_%H%M%S')}_{args.ncl}_{args.rounds}_{args.target_ratio}_{args.epochs}_{args.strat}_{args.coarsen}_{args.priv}"
     print(f"Experiment path: {experiment_path}")
     os.makedirs(experiment_path, exist_ok=True)
-    # for cr in coarsen:
-    #     for dp in priv:
-    #         print(f"Coarsen: {cr}, Priv: {dp}")
-    #         execute(args, cr, dp, experiment_path)
+    for cr in coarsen:
+        for dp in priv:
+            print(f"Coarsen: {cr}, Priv: {dp}")
+            execute(args, cr, dp, experiment_path, attacks)
     for cr in coarsen:
         for dp in priv:
             print(f"Coarsen: {cr}, Priv: {dp}")
