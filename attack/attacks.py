@@ -3,7 +3,7 @@ from collections import defaultdict
 from attack.property_infer import Attack
 import numpy as np
 import os
-def attack_recon(target_model,dataset, attack_test_indices, max_nodes, recon_stat, recon_metrics, num_runs, graph_vae_model_file, experiment_path, cr, dp, cid):
+def attack_recon(target_model,dataset, attack_test_indices, max_nodes, recon_stat, recon_metrics, num_runs, graph_vae_model_file, experiment_path, cr, dp, cid, round):
     attack = AttackGraphRecon(target_model.model, max_nodes)
     # paras=target_model.paras
     paras = target_model.load_paras('target_model_parars')
@@ -50,11 +50,11 @@ def attack_recon(target_model,dataset, attack_test_indices, max_nodes, recon_sta
         os.mkdir(f"{experiment_path}/recon")
     except:
         print("")
-    with open(f"{experiment_path}/recon/recon_results.csv", "w") as f:
-        f.write(f"cid, cr, dp, Graph Recon Stat, Graph Recon Metric, Value, Std\n")
+    with open(f"{experiment_path}/recon/recon_results.csv", "a+") as f:
+        f.write(f"cid,round, cr, dp, Graph Recon Stat, Graph Recon Metric, Value, Std\n")
         for graph_recon_stat in recon_stat:
             for graph_recon_metric in recon_metrics:
-                f.write(f"{cid},{cr},{dp},{graph_recon_stat}, {graph_recon_metric}, {graph_recon_stat_data[graph_recon_stat][graph_recon_metric][0]}, {graph_recon_stat_data[graph_recon_stat][graph_recon_metric][1]}\n")
+                f.write(f"{cid},{round},{cr},{dp},{graph_recon_stat}, {graph_recon_metric}, {graph_recon_stat_data[graph_recon_stat][graph_recon_metric][0]}, {graph_recon_stat_data[graph_recon_stat][graph_recon_metric][1]}\n")
 def attack_property(target_model, dataset, attack_test_indices,num_runs, prop_infer_file, properties, path, cid, cr, dp):
     acc_run=[]
     baseline_acc_run=[]

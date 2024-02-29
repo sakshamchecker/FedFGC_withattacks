@@ -75,7 +75,7 @@ def execute(args, cr, dp, experiment_path, attacks):
     for att in attacks:
         if att=='recon':
             pretrainedvae="pretrained/PROTEINS_diff_pool.zip"
-            attack_recon(target_model, dataset, attack_test_indices, max_nodes=20, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], num_runs=1, graph_vae_model_file=pretrainedvae, experiment_path=experiment_path, cid=-1, cr=cr, dp=dp)
+            attack_recon(target_model, dataset, attack_test_indices, max_nodes=20, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], num_runs=1, graph_vae_model_file=pretrainedvae, experiment_path=experiment_path, cid=-1, cr=cr, dp=dp, round=-1)
         elif att=='infer':
             pretrained_infer="pretrained/PROTEINS_PROTEINS_diff_pool_diff_pool_2"
 
@@ -191,4 +191,4 @@ if __name__=="__main__":
         for dp in priv:
             print(f"Coarsen: {cr}, Priv: {dp}")
             execute_fl(args, cr, dp, experiment_path, att=attacks)
-    execute(args)
+    # execute(args)

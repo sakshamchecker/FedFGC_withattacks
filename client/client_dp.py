@@ -108,5 +108,5 @@ class FlowerClient(fl.client.NumPyClient):
             elif att=='recon':
                 if att=='recon':
                     pretrainedvae="pretrained/PROTEINS_diff_pool.zip"
-                    attack_recon(self.model, self.dataset, self.valloader, max_nodes=20, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], num_runs=1, graph_vae_model_file=pretrainedvae, experiment_path=self.path, cid=self.cid, cr=self.cr, dp=self.dp)
+                    attack_recon(self.model, self.dataset, self.valloader, max_nodes=20, recon_stat=['degree_dist', 'close_central_dist', 'between_central_dist','cluster_coeff_dist','isomorphism_test'], recon_metrics=['cosine_similarity'], num_runs=1, graph_vae_model_file=pretrainedvae, experiment_path=self.path, cid=self.cid, cr=self.cr, dp=self.dp, round=config['server_round'])
         return loss, int(len(self.valloader)), {"accuracy": accuracy}
