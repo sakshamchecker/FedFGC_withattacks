@@ -183,5 +183,5 @@ if __name__=="__main__":
         for cr in coarsen:
             for dp in priv:
                 print(f"Coarsen: {cr}, Priv: {dp}")
-                execute_fl(args, cr, dp, experiment_path)
+                execute_fl(args, cr, dp, experiment_path, att=att)
     execute(args)
