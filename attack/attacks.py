@@ -54,9 +54,13 @@ def attack_property(target_model, dataset, attack_test_indices,num_runs, prop_in
     attack_test_dataset = dataset[list(attack_test_indices)]
     # attack.generate_labels(attack_test_dataset, attack_test_dataset, property_num_class)
     attack.generate_test_embedding(attack_test_dataset,192)
+    print("generated test embedding")
     attack.generate_labels(attack_test_dataset, attack_test_dataset, 2)
+    print("generated labels")
     attack.train_attack_model(is_train=False)
+    print("trained attack model")
     attack.load_attack_model(prop_infer_file)
+    print("loaded attack model")
 
     
     for i in num_runs:
