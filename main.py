@@ -36,8 +36,7 @@ def load_raw_data( dataset_name,max_nodes=1000, use_feat=True):
 
         if use_feat:
             dataset = TUDataset("data" + str(max_nodes) + '/', name=dataset_name, use_node_attr=True,
-                         use_edge_attr=True, transform=T.ToDense(max_nodes),
-                         pre_filter=MyFilter(max_nodes))
+                         use_edge_attr=True)
         else:
             dataset = TUDataset('data'+ '/'.join((str(max_nodes), 'non_feat')) + '/', name=dataset_name,
                          use_node_attr=True, use_edge_attr=True, transform=T.ToDense(max_nodes),
