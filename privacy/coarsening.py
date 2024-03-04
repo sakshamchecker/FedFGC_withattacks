@@ -339,9 +339,9 @@ def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
     for data in tqdm(cus_dataloader):
         # print(data)
         
-        for i in range(len(data.adj)):
-            adj=data.adj[i]
-            X=data.x[i]
+        for i in range(len(data)):
+            adj=to_dense_adj(data[i].edge_index)[0]
+            X=data[i].x
             
             adj1,X1=coarsening(adj,X,coarsen_params[0],coarsen_params[1],coarsen_params[2],coarsen_params[3])
             if(adj1.shape!=adj.shape):
@@ -365,13 +365,7 @@ def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
     return training_graphs
 
 
-class MyFilter(object):
-    def __init__(self, max_nodes):
-        self.max_nodes = max_nodes
-    
-    def __call__(self, data):
-        return data.num_nodes <= self.max_nodes
-    
+
     # denser=ToDense(max_nodes)
     # filter=MyFilter(max_nodes)
   # if data.edge_index is not None:
