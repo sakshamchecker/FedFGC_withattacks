@@ -325,7 +325,7 @@ import torch
 
 
 
-def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
+def coarsen_a_data( cus_dataloader, coarsen_params, batch_size, max_nodes):
     """
     Coarsens the data by the given coarsening parameters
     :param cus_dataloader: Custom dataloader object
@@ -357,17 +357,27 @@ def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
     coarsen_adj=torch.Tensor(coarsen_adj)
     coarsen_x=torch.Tensor(coarsen_x)
     # print(coarsen_adj,coarsen_x)
-    denser=ToDense(20)
+    denser=ToDense(max_nodes)
+    filter=MyFilter(max_nodes)
     for i in range(len(coarsen_adj)):
         data=Data(x=coarsen_x[i],adj=coarsen_adj[i], y=y[i])
         if data.edge_index is not None:
-          data=denser(data)
+          if filter(data):
+            data=denser(data)
         # print(data)
 
         # coarsened_batch=Batch()
         # final_batch=coarsened_batch.from_data_list(batch_list)
-          training_graphs.append(data)
+            training_graphs.append(data)
           print("corasening")
     
     training_graphs=DenseDataLoader(training_graphs, batch_size=batch_size, shuffle=True)
     return training_graphs
+
+
+class MyFilter(object):
+    def __init__(self, max_nodes):
+        self.max_nodes = max_nodes
+    
+    def __call__(self, data):
+        return data.num_nodes <= self.max_nodes
