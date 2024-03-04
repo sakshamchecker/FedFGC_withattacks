@@ -20,10 +20,11 @@ def train_a_model(target_model, dataset, target_indices, attack_test_indices, nu
     # target_test_dataset = dataset[list(shadow_indices)]
     target_test_dataset = dataset[list(attack_test_indices)]
     target_train_loader = DataLoader(target_train_dataset, batch_size=batch_size)
-    target_test_loader = DenseDataLoader(target_test_dataset, batch_size=batch_size)
+    target_test_loader = DataLoader(target_test_dataset, batch_size=batch_size)
     if coarsen:
         target_train_loader=coarsen_a_data(cus_dataloader=target_train_loader, coarsen_params=[0.01, 0.01, 0.01, 0.01], batch_size=batch_size)
     filtered_train_loader=[]
+    filtered_test_loader=[]
     denser=ToDense(max_nodes)
     filter=MyFilter(max_nodes)
     for data in target_train_loader:
@@ -31,7 +32,13 @@ def train_a_model(target_model, dataset, target_indices, attack_test_indices, nu
             if filter(data[i]):
                 temp=denser(data[i])
                 filtered_train_loader.append(temp)
+    for data in target_test_loader:
+        for i in range(len(data)):
+            if filter(data[i]):
+                temp=denser(data[i])
+                filtered_test_loader.append(temp)
     target_train_loader=DenseDataLoader(filtered_train_loader, batch_size=batch_size)
+    target_test_loader=DenseDataLoader(filtered_test_loader, batch_size=batch_size)
     target_model.train_model(target_train_loader, target_test_loader, num_epochs, dp, dp_params)
     test_accuracy=target_model.evaluate_model(target_test_loader)
     
