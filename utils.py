@@ -29,8 +29,8 @@ def train_a_model(target_model, dataset, target_indices, attack_test_indices, nu
     for data in target_train_loader:
         for i in range(len(data)):
             if filter(data[i]):
-                data[i]=denser(data[i])
-                filtered_train_loader.append(data[i])
+                temp=denser(data[i])
+                filtered_train_loader.append(temp)
     target_train_loader=DenseDataLoader(filtered_train_loader, batch_size=batch_size)
     target_model.train_model(target_train_loader, target_test_loader, num_epochs, dp, dp_params)
     test_accuracy=target_model.evaluate_model(target_test_loader)
