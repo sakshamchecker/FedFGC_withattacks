@@ -349,8 +349,8 @@ def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
                 temp=from_scipy_sparse_matrix(A)
                 g=Data(x=X1, edge_index=temp[0],edge_attr=temp[1],y=data[i].y)
                 training_graphs.append(g)
-        
-    training_graphs=DataLoader(training_graphs, batch_size=batch_size, shuffle=True)
+    print(len(training_graphs))
+    training_graphs=DataLoader(training_graphs, batch_size=batch_size, drop_last=True)
     return training_graphs
 
 
