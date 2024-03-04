@@ -338,28 +338,17 @@ def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
     y=[]
     for data in tqdm(cus_dataloader):
         # print(data)
-        
+
         for i in range(len(data)):
             adj=to_dense_adj(data[i].edge_index)[0]
             X=data[i].x
             
             adj1,X1=coarsening(adj,X,coarsen_params[0],coarsen_params[1],coarsen_params[2],coarsen_params[3])
-            if(adj1.shape!=adj.shape):
-                coarsen_adj.append(adj1.tolist())
-                coarsen_x.append(X1.tolist())
-            y.append(data.y[i])
-            # print(adj1.shape)
-            # print(X.shape,X1.shape)
-            # A=scpy.csr_matrix(adj1)
-            # temp=from_scipy_sparse_matrix(A)
-            # g=Data(x=X1,edge_index=temp[0],edge_attr=temp[1],y=graphs[i].y)
-            # graphs[i]=g
-    coarsen_adj=torch.Tensor(coarsen_adj)
-    coarsen_x=torch.Tensor(coarsen_x)
-    # print(coarsen_adj,coarsen_x)
-
-    for i in range(len(coarsen_adj)):
-        data=Data(x=coarsen_x[i],adj=coarsen_adj[i], y=y[i])
+            if adj1.shape!=adj.shape:
+                A=scpy.csr_matrix(adj1)
+                temp=from_scipy_sparse_matrix(A)
+                g=Data(x=X1, edge_index=temp[0],edge_attr=temp[1],y=data[i].y)
+                training_graphs.append(g)
         
     training_graphs=DataLoader(training_graphs, batch_size=batch_size, shuffle=True)
     return training_graphs
