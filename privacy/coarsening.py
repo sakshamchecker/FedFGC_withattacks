@@ -357,8 +357,10 @@ def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
     coarsen_adj=torch.Tensor(coarsen_adj)
     coarsen_x=torch.Tensor(coarsen_x)
     # print(coarsen_adj,coarsen_x)
+    denser=ToDense(20)
     for i in range(len(coarsen_adj)):
         data=Data(x=coarsen_x[i],adj=coarsen_adj[i], y=y[i])
+        data=denser(data)
         # print(data)
 
         # coarsened_batch=Batch()

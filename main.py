@@ -161,7 +161,7 @@ if __name__=="__main__":
     parser.add_argument('--epochs', type=int, default=1, help='epochs')
     parser.add_argument('--strat', type=str, default="FedAvg", help='strategy')
     parser.add_argument('--output', type=str, default="output", help='output')
-    parser.add_argument('--coarsen', type=str, default="False", help='coarsen')
+    parser.add_argument('--coarsen', type=str, default="True", help='coarsen')
     parser.add_argument('--priv', type=str, default="False", help='priv')
     parser.add_argument('--max_nodes', type=int, default=20, help='max_nodes')
     parser.add_argument('--attacks', type=str, default="recon", help='attacks')
@@ -189,8 +189,8 @@ if __name__=="__main__":
         for dp in priv:
             print(f"Coarsen: {cr}, Priv: {dp}")
             execute(args, cr, dp, experiment_path, attacks)
-    for cr in coarsen:
-        for dp in priv:
-            print(f"Coarsen: {cr}, Priv: {dp}")
-            execute_fl(args, cr, dp, experiment_path, att=attacks)
+    # for cr in coarsen:
+    #     for dp in priv:
+    #         print(f"Coarsen: {cr}, Priv: {dp}")
+    #         execute_fl(args, cr, dp, experiment_path, att=attacks)
     # execute(args)
