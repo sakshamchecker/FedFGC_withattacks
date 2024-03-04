@@ -1,8 +1,16 @@
 
 from torch_geometric.data import DenseDataLoader, DataLoader
 import numpy as np
+from torch_geometric.transforms import ToDense
 from privacy.coarsening import coarsen_a_data
-def train_a_model(target_model, dataset, target_indices, attack_test_indices, num_epochs, batch_size=32, coarsen=False, dp=False, dp_params=[]):
+class MyFilter(object):
+    def __init__(self, max_nodes):
+        self.max_nodes = max_nodes
+    
+    def __call__(self, data):
+        return data.num_nodes <= self.max_nodes
+    
+def train_a_model(target_model, dataset, target_indices, attack_test_indices, num_epochs, batch_size=32, coarsen=False, dp=False, dp_params=[], max_nodes=20):
     # dataset=DataLoader(dataset, batch_size=batch_size)
     # for data in dataset:
     #     graphs=data.to_data_list()
@@ -11,10 +19,19 @@ def train_a_model(target_model, dataset, target_indices, attack_test_indices, nu
     target_train_dataset = dataset[list(target_indices)]
     # target_test_dataset = dataset[list(shadow_indices)]
     target_test_dataset = dataset[list(attack_test_indices)]
-    target_train_loader = DenseDataLoader(target_train_dataset, batch_size=batch_size)
+    target_train_loader = DataLoader(target_train_dataset, batch_size=batch_size)
     target_test_loader = DenseDataLoader(target_test_dataset, batch_size=batch_size)
     if coarsen:
-        target_train_loader=coarsen_a_data(cus_dataloader=target_train_loader, coarsen_params=[0.01, 0.01, 0.01, 0.01], batch_size=batch_size)
+        target_train_loader=coarsen_a_data(cus_dataloader=target_train_loader, coarsen_params=[0.01, 0.01, 0.01, 0.01], batch_size=batch_size, max_nodes=max_nodes)
+    filtered_train_loader=[]
+    denser=ToDense(max_nodes)
+    filter=MyFilter(max_nodes)
+    for data in target_train_loader:
+        for i in range(len(data)):
+            if filter(data[i]):
+                data[i]=denser(data[i])
+                filtered_train_loader.append(data[i])
+    target_train_loader=DenseDataLoader(filtered_train_loader, batch_size=batch_size)
     target_model.train_model(target_train_loader, target_test_loader, num_epochs, dp, dp_params)
     test_accuracy=target_model.evaluate_model(target_test_loader)
     
