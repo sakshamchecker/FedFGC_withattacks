@@ -367,6 +367,7 @@ def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
         # coarsened_batch=Batch()
         # final_batch=coarsened_batch.from_data_list(batch_list)
           training_graphs.append(data)
+          print("corasening")
     
     training_graphs=DenseDataLoader(training_graphs, batch_size=batch_size, shuffle=True)
     return training_graphs
