@@ -79,7 +79,7 @@ def train_a_model(target_model, dataset, target_indices, attack_test_indices, nu
     target_train_loader = DataLoader(target_train_dataset, batch_size=batch_size)
     target_test_loader = DataLoader(target_test_dataset, batch_size=batch_size)
     if coarsen:
-        target_train_loader=coarsen_a_data(cus_dataloader=target_train_loader, coarsen_params=[0.01, 0.01, 0.01, 0.01], batch_size=batch_size)
+        target_train_loader=coarsen_a_data(cus_dataloader=target_train_loader, coarsen_params=[0.01,0.1,0.01,1], batch_size=batch_size)
     filtered_train_loader=[]
     filtered_test_loader=[]
     denser=ToDense(max_nodes)

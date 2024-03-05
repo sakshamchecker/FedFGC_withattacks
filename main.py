@@ -67,7 +67,7 @@ def execute(args, cr, dp, experiment_path, attacks):
     target_model = DiffPool(feat_dim=dataset.num_features, num_classes=dataset.num_classes, max_nodes=20, args=args)
     # print(target_model.model)
     print("Model Loaded")
-    test_accuracy=train_a_model(target_model, dataset, target_indices, attack_test_indices, num_epochs=args.epochs, batch_size=8, coarsen=cr, dp=dp, dp_params=[1.1, 0.3])
+    test_accuracy=train_a_model(target_model, dataset, target_indices, attack_test_indices, num_epochs=args.epochs, batch_size=args.batch_size, coarsen=cr, dp=dp, dp_params=[1.1, 0.3])
     train_accuracy=test_a_model(target_model, dataset, attack_test_indices)
     print(f"Test Accuracy: {test_accuracy}")
     print(f"Train Accuracy: {train_accuracy}")
@@ -164,6 +164,8 @@ if __name__=="__main__":
     parser.add_argument('--priv', type=str, default="False", help='priv')
     parser.add_argument('--max_nodes', type=int, default=20, help='max_nodes')
     parser.add_argument('--attacks', type=str, default="recon", help='attacks')
+    parser.add_argument('--batch_size', type=int, default=16, help='batch_size')
+
     args = parser.parse_args()
     if args.coarsen=='False':
         coarsen=[False]
