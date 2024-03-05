@@ -10,7 +10,59 @@ class MyFilter(object):
     
     def __call__(self, data):
         return data.num_nodes <= self.max_nodes
-    
+
+from typing import List, Union
+
+import torch
+from torch.utils.data.dataloader import default_collate
+
+from torch_geometric.data import Batch, Data, Dataset
+
+
+def collate_fn(data_list: List[Data]) -> Batch:
+    batch = Batch()
+    for key in data_list[0].keys():
+        try:
+            batch[key] = default_collate([data[key] for data in data_list])
+        except:
+            print(key)
+            exit()
+    return batch
+
+
+class DenseDataLoader(torch.utils.data.DataLoader):
+    r"""A data loader which batches data objects from a
+    :class:`torch_geometric.data.dataset` to a
+    :class:`torch_geometric.data.Batch` object by stacking all attributes in a
+    new dimension.
+
+    .. note::
+
+        To make use of this data loader, all graph attributes in the dataset
+        need to have the same shape.
+        In particular, this data loader should only be used when working with
+        *dense* adjacency matrices.
+
+    Args:
+        dataset (Dataset): The dataset from which to load the data.
+        batch_size (int, optional): How many samples per batch to load.
+            (default: :obj:`1`)
+        shuffle (bool, optional): If set to :obj:`True`, the data will be
+            reshuffled at every epoch. (default: :obj:`False`)
+        **kwargs (optional): Additional arguments of
+            :class:`torch.utils.data.DataLoader`, such as :obj:`drop_last` or
+            :obj:`num_workers`.
+    """
+    def __init__(self, dataset: Union[Dataset, List[Data]],
+                 batch_size: int = 1, shuffle: bool = False, **kwargs):
+        # Remove for PyTorch Lightning:
+        kwargs.pop('collate_fn', None)
+
+        super().__init__(dataset, batch_size=batch_size, shuffle=shuffle,
+                         collate_fn=collate_fn, **kwargs)
+
+
+
 def train_a_model(target_model, dataset, target_indices, attack_test_indices, num_epochs, batch_size=32, coarsen=False, dp=False, dp_params=[], max_nodes=20):
     # dataset=DataLoader(dataset, batch_size=batch_size)
     # for data in dataset:
@@ -28,24 +80,24 @@ def train_a_model(target_model, dataset, target_indices, attack_test_indices, nu
     filtered_test_loader=[]
     denser=ToDense(max_nodes)
     filter=MyFilter(max_nodes)
-    # for data in target_train_loader:
-    #     g=data.to_data_list()
-    #     for i in range(len(data)):
-    #         if filter(data[i]):
-    #             temp=denser(data[i])
-    #             filtered_train_loader.append(temp)
-    #             # g.append(temp)
-    #             print(temp.x.shape)
-    #             print(temp.adj.shape)
-    #             print(temp.mask.shape)
-    #         # filtered_train_loader.append(Batch().from_data_list(g))
-    # print('------------------------------', len(filtered_train_loader))
+    for data in target_train_loader:
+        g=data.to_data_list()
+        for i in range(len(data)):
+            if filter(data[i]):
+                temp=denser(data[i])
+                filtered_train_loader.append(temp)
+                # g.append(temp)
+                print(temp.x.shape)
+                print(temp.adj.shape)
+                print(temp.mask.shape)
+            # filtered_train_loader.append(Batch().from_data_list(g))
+    print('------------------------------', len(filtered_train_loader))
     for data in target_test_loader:
         for i in range(len(data)):
             if filter(data[i]):
                 temp=denser(data[i])
                 filtered_test_loader.append(temp)
-    # target_train_loader=DenseDataLoader(filtered_train_loader, batch_size=batch_size, drop_last=True)
+    target_train_loader=DenseDataLoader(filtered_train_loader, batch_size=batch_size, drop_last=True)
     target_test_loader=DenseDataLoader(filtered_test_loader, batch_size=batch_size, drop_last=True)
     target_model.train_model(target_train_loader, target_test_loader, num_epochs, dp, dp_params)
     test_accuracy=target_model.evaluate_model(target_test_loader)

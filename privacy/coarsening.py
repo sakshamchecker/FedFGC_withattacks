@@ -342,8 +342,6 @@ def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
     training_graphs=[]
     coarsen_adj,coarsen_x=[],[]
     y=[]
-    filter=MyFilter(20) 
-    denser=ToDense(20)
     for data in tqdm(cus_dataloader):
         # print(data)
 
@@ -356,11 +354,9 @@ def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
                 A=scpy.csr_matrix(adj1)
                 temp=from_scipy_sparse_matrix(A)
                 g=Data(x=X1, edge_index=temp[0],edge_attr=temp[1],y=data[i].y)
-                if filter(g):
-                    g=denser(g)
-                    training_graphs.append(g)
+                training_graphs.append(g)
     print(len(training_graphs))
-    training_graphs=DenseDataLoader(training_graphs, batch_size=batch_size, drop_last=True)
+    training_graphs=DataLoader(training_graphs, batch_size=batch_size, drop_last=True)
     return training_graphs
 
 
