@@ -27,7 +27,7 @@ def collate_fn(data_list: List[Data]) -> Batch:
         except:
             print('-------------------')
             print([data[key] for data in data_list])
-            print(key)
+            print(batch[key])
             exit()
     return batch
 
