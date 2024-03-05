@@ -358,7 +358,7 @@ def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
                 g=Data(x=X1, edge_index=temp[0],edge_attr=temp[1],y=data[i].y)
                 if filter(g):
                     g=denser(g)
-                training_graphs.append(g)
+                    training_graphs.append(g)
     print(len(training_graphs))
     training_graphs=DenseDataLoader(training_graphs, batch_size=batch_size, drop_last=True)
     return training_graphs
