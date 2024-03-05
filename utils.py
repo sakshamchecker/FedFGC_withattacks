@@ -92,6 +92,7 @@ def train_a_model(target_model, dataset, target_indices, attack_test_indices, nu
                 temp=denser(data[i])
                 if temp.y.shape[0]==1:
                     filtered_train_loader.append(temp)
+                print(temp.mask)
                 # g.append(temp)
                 # print(temp.x.shape)
                 # print(temp.adj.shape)
