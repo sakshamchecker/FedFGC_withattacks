@@ -323,7 +323,13 @@ from torch_geometric.transforms import ToDense
 
 import torch                   
 
-
+class MyFilter(object):
+    def __init__(self, max_nodes):
+        self.max_nodes = max_nodes
+    
+    def __call__(self, data):
+        return data.num_nodes <= self.max_nodes
+    
 
 def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
     """
@@ -336,6 +342,8 @@ def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
     training_graphs=[]
     coarsen_adj,coarsen_x=[],[]
     y=[]
+    filter=MyFilter(20) 
+    denser=ToDense(20)
     for data in tqdm(cus_dataloader):
         # print(data)
 
@@ -347,10 +355,12 @@ def coarsen_a_data( cus_dataloader, coarsen_params, batch_size):
             if adj1.shape!=adj.shape:
                 A=scpy.csr_matrix(adj1)
                 temp=from_scipy_sparse_matrix(A)
-                g=Data(x=X1, edge_index=temp[0],y=data[i].y)
+                g=Data(x=X1, edge_index=temp[0],edge_attr=temp[1],y=data[i].y)
+                if filter(g):
+                    g=denser(g)
                 training_graphs.append(g)
     print(len(training_graphs))
-    training_graphs=DataLoader(training_graphs, batch_size=batch_size, drop_last=True)
+    training_graphs=DenseDataLoader(training_graphs, batch_size=batch_size, drop_last=True)
     return training_graphs
 
 
