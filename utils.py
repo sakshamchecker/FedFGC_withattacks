@@ -88,13 +88,14 @@ def train_a_model(target_model, dataset, target_indices, attack_test_indices, nu
         g=data.to_data_list()
         for i in range(len(data)):
             if filter(data[i]):
+                print(data[i].y.shape)
                 temp=denser(data[i])
                 filtered_train_loader.append(temp)
                 # g.append(temp)
                 # print(temp.x.shape)
                 # print(temp.adj.shape)
                 # print(temp.mask.shape)
-                print(temp.y.shape)
+                # print(temp.y.shape)
             # filtered_train_loader.append(Batch().from_data_list(g))
     print('------------------------------', len(filtered_train_loader))
     for data in target_test_loader:
