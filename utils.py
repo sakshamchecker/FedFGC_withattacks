@@ -25,6 +25,8 @@ def collate_fn(data_list: List[Data]) -> Batch:
         try:
             batch[key] = default_collate([data[key] for data in data_list])
         except:
+            print('-------------------')
+            print([data[key] for data in data_list])
             print(key)
             exit()
     return batch
@@ -87,9 +89,9 @@ def train_a_model(target_model, dataset, target_indices, attack_test_indices, nu
                 temp=denser(data[i])
                 filtered_train_loader.append(temp)
                 # g.append(temp)
-                print(temp.x.shape)
-                print(temp.adj.shape)
-                print(temp.mask.shape)
+                # print(temp.x.shape)
+                # print(temp.adj.shape)
+                # print(temp.mask.shape)
                 print(temp.y.shape)
             # filtered_train_loader.append(Batch().from_data_list(g))
     print('------------------------------', len(filtered_train_loader))
