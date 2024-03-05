@@ -64,10 +64,10 @@ def execute(args, cr, dp, experiment_path, attacks):
     # for i in range(len(attack_test_indices)):
     #     print(len(attack_test_indices[i]))
     print("Data Loaded")
-    target_model = DiffPool(feat_dim=dataset.num_features, num_classes=dataset.num_classes, max_nodes=10, args=args)
+    target_model = DiffPool(feat_dim=dataset.num_features, num_classes=dataset.num_classes, max_nodes=1000, args=args)
     # print(target_model.model)
     print("Model Loaded")
-    test_accuracy=train_a_model(target_model, dataset, target_indices, attack_test_indices, num_epochs=args.epochs, batch_size=args.batch_size, coarsen=cr, dp=dp, dp_params=[1.1, 0.3], max_nodes=10)
+    test_accuracy=train_a_model(target_model, dataset, target_indices, attack_test_indices, num_epochs=args.epochs, batch_size=args.batch_size, coarsen=cr, dp=dp, dp_params=[1.1, 0.3], max_nodes=1000)
     train_accuracy=test_a_model(target_model, dataset, attack_test_indices)
     print(f"Test Accuracy: {test_accuracy}")
     print(f"Train Accuracy: {train_accuracy}")
