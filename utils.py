@@ -3,6 +3,7 @@ from torch_geometric.data import DenseDataLoader, DataLoader
 import numpy as np
 from torch_geometric.transforms import ToDense
 from privacy.coarsening import coarsen_a_data
+from torch_geometric.data import Batch
 class MyFilter(object):
     def __init__(self, max_nodes):
         self.max_nodes = max_nodes
@@ -28,20 +29,23 @@ def train_a_model(target_model, dataset, target_indices, attack_test_indices, nu
     denser=ToDense(max_nodes)
     filter=MyFilter(max_nodes)
     for data in target_train_loader:
+        g=data.to_data_list()
         for i in range(len(data)):
             if filter(data[i]):
                 temp=denser(data[i])
-                filtered_train_loader.append(temp)
+                # filtered_train_loader.append(temp)
+                g.append(temp)
                 print(temp.x.shape)
                 print(temp.adj.shape)
-                print(temp.mask.shape)   
+                print(temp.mask.shape)
+            filtered_train_loader.append(Batch().from_data_list(g))
     print('------------------------------', len(filtered_train_loader))
     for data in target_test_loader:
         for i in range(len(data)):
             if filter(data[i]):
                 temp=denser(data[i])
                 filtered_test_loader.append(temp)
-    target_train_loader=DenseDataLoader(filtered_train_loader, batch_size=batch_size, drop_last=True)
+    target_train_loader=DenseDataLoader(filtered_train_loader)
     target_test_loader=DenseDataLoader(filtered_test_loader, batch_size=batch_size)
     target_model.train_model(target_train_loader, target_test_loader, num_epochs, dp, dp_params)
     test_accuracy=target_model.evaluate_model(target_test_loader)
